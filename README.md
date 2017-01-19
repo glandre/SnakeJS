@@ -1,6 +1,6 @@
 # SnakeJS
-Snake Game Implemented in JavaScript using p5 Framework
-
+Snake Game Implemented in JavaScript using p5 Framework.
+This code is inspired and partially based on Daniel Shiffman's Coding Challenge #3 - The Snake Game (https://www.youtube.com/watch?v=AaGK-fj-BAM&list=PLRqwX-V7Uu6ZiZxtDDRCi6uhfTH4FilpH)
 
 ## Backlog:
 
