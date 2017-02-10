@@ -13,4 +13,8 @@ class Food extends MovingObject {
 	static is(obj) {
 		return obj.className === 'Food'
 	}
+
+	static find(array) {
+		return array.find((obj) => Food.is(obj))
+	}
 }

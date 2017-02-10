@@ -22,6 +22,5 @@ class FoodDrawer extends Drawable {
 	restart() {
 		this.object.x = random(this.startX, this.endX)
 		this.object.y = random(this.startY, this.endY)
-		console.log(this)
 	}
 }

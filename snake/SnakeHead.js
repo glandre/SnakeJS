@@ -1,4 +1,4 @@
-class SnakeHead extends MovingObject 	{
+class SnakeHead extends MovingObject {
 
 	constructor(x, y, xSpeed, ySpeed, baseSpeed = 1) {
 		super(x, y, xSpeed, ySpeed, baseSpeed)
@@ -7,6 +7,10 @@ class SnakeHead extends MovingObject 	{
 
 	static is(obj) {
 		return obj.className === 'SnakeHead'
+	}
+
+	static find(array) {
+		return array.find((obj) => SnakeHead.is(obj))
 	}
 	
 }

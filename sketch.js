@@ -6,6 +6,7 @@ var snakeDrawer, startX, startY, startXSpeed, startYSpeed, baseSpeed
 var foodDrawer, foodSize, eaten
 
 function setup() {
+	started = true
 	paused = false
 	loops = 0
 	maxLoop = 1000
@@ -18,46 +19,54 @@ function setup() {
 	startY = 0
 	startXSpeed = 1
 	startYSpeed = 0
-	baseSpeed = 3
+	baseSpeed = 10
 
-	snakeDrawer = new SnakeDrawer(new SnakeHead(startX, startY, startXSpeed, startYSpeed, baseSpeed), baseSize)
-	snakeDrawer.restrict(0, width - baseSize -1, 0, height - baseSize -1)
+	snakeDrawer = new SnakeDrawer(new Snake(startX, startY, startXSpeed, startYSpeed, baseSpeed), baseSize)
+	snakeDrawer.restrict(0, width - 1.2*baseSize, 0, height - 1.2*baseSize)
 	
 	// Food
 	eaten = 0
 	foodSize = 10
-	foodDrawer = new FoodDrawer(new Food(), foodSize, 0, width, 0, height)
-	// foodDrawer = new FoodDrawer(new Food(), foodSize, 0, 0, 0, 0)
-
-	console.log('setting up...')
+	foodDrawer = new FoodDrawer(new Food(), foodSize, 0, width - 1.2*baseSize, 0, height - 1.2*baseSize)
 
 	createCanvas(width,height)
 
 	container = new Container([snakeDrawer, foodDrawer])
 	container.setup()
+	console.log('START!')
 }
 
 function draw() {
 	background(25)
+	frameRate(10)
 	container.draw()
-	checkColisions(container.colisions())
+	checkColisions(container.colisions(baseSize))
+	if (snakeDrawer.crashed()) {
+		console.log('Game Over! FINAL SCORE:', eaten)
+		pause()
+		started = false
+	}
 }
-
 function checkColisions(colisions) {
 	colisions = container.colisions(baseSize)
-	console.log(colisions)
 	for(let i = 0; i < colisions.length; i++) {
 		colision = colisions[i]
-		if(Food.is(colision.obj1) && SnakeHead.is(colision.obj2)) {
-			colision.obj1.restart(random(0, width), random(0, height))
-			// colision.obj2.increaseSnake
-			break
-		}
-		
-		if(Food.is(colision.obj2) && SnakeHead.is(colision.obj1)) {
-			colision.obj2.restart(random(0, width), random(0, height))
-			// colision.obj1.increaseSnake
-			break
+		snakeHeadFound = SnakeHead.find(colision.objects)
+		foodFound = Food.find(colision.objects)
+		if(snakeHeadFound) {
+			snakeFound = snakeHeadFound.getParent()
+			if(foodFound) {
+				foodFound.restart(
+					random(0, width - 1.2*baseSize), 
+					random(0, height - 1.2*baseSize)
+				)
+				snakeFound.increase()
+				eaten++
+				break
+			} else {
+				snakeFound.crash()
+				break
+			}
 		}
 	}
 }
@@ -65,16 +74,20 @@ function checkColisions(colisions) {
 function keyPressed() {
 	switch(keyCode) {
 		case LEFT_ARROW:
-			snakeDrawer.dir(-1, 0)
+			if(snakeDrawer.getXSpeed() === 0)
+				snakeDrawer.dir(-1, 0)
 			break
 		case RIGHT_ARROW:
-			snakeDrawer.dir(1, 0)
+			if(snakeDrawer.getXSpeed() === 0)
+				snakeDrawer.dir(1, 0)
 			break
 		case UP_ARROW:
-			snakeDrawer.dir(0, -1)
+			if(snakeDrawer.getYSpeed() === 0)
+				snakeDrawer.dir(0, -1)
 			break
 		case DOWN_ARROW:
-			snakeDrawer.dir(0, 1)
+			if(snakeDrawer.getYSpeed() === 0)
+				snakeDrawer.dir(0, 1)
 			break
 		case ENTER:
 			restart()
@@ -86,17 +99,23 @@ function keyPressed() {
 }
 
 function pause() {
-	paused = !paused
-	if(paused)
-		noLoop()
-	else
-		loop()
+	if (started) {
+		paused = !paused 
+	
+		if(paused)
+			noLoop()
+		else
+			loop()
+	}
 }
 
 function restart () {
+	console.log('START!')
+	eaten = 0
+	started = true
 	paused = true
-	pause()
-	for(let i = 0; i < container.objects.length; i++) {
-		container.objects[i].restart()
+	for(let object of container.objects) {
+		object.restart()
 	}
+	pause()
 }

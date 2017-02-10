@@ -6,14 +6,27 @@ class MovingObject {
 		this.xSpeed = this.startXSpeed = xSpeed
 		this.ySpeed = this.startYSpeed = ySpeed
 		this.baseSpeed = baseSpeed
+		this.parent = null
 	}
 
+	setParent(parent) { this.parent = parent }
+	
+	getParent() { return this.parent }
+
+	getX() { return this.x }
+
+	getY() { return this.y }
+
+	getXSpeed() { return this.xSpeed }
+
+	getYSpeed() { return this.ySpeed }
+
 	nextX() {
-		return this.x + this.xSpeed
+		return this.getX() + this.xSpeed
 	}
 
 	nextY() {
-		return this.y + this.ySpeed
+		return this.getY() + this.ySpeed
 	}
 
 	dir(xSpeed, ySpeed) {

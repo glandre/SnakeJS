@@ -18,6 +18,15 @@ class Container extends Drawable {
 	}
 
 	colisions(precision) {
-		return Colision.check(this.objects, precision)
+		return Colision.check(this.getChildren(), precision)
+	}
+
+	getChildren() {
+		let children = []
+		for (let obj of this.objects) {
+			let c = obj.getChildren()
+			children = children.concat(obj.getChildren())
+		}
+		return children
 	}
 }
