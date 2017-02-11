@@ -6,10 +6,13 @@ class SnakeDrawer extends Drawable {
 
 	draw() {
 		fill(this.color)
+		stroke(0)
+		strokeWeight(0.25)
 		rect(this.object.head.x, this.object.head.y, this.size, this.size)
 		for(let piece of this.object.body) {
 			rect(piece.x, piece.y, this.size, this.size)
 		}
+		noStroke()
 		super.draw()
 	}
 

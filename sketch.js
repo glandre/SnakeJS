@@ -15,8 +15,8 @@ function setup() {
 	baseSize = 10
 
 	// Snake
-	startX = 0
-	startY = 0
+	startX = 10
+	startY = 10
 	startXSpeed = 1
 	startYSpeed = 0
 	baseSpeed = 10
@@ -31,19 +31,26 @@ function setup() {
 
 	createCanvas(width,height)
 
+
 	container = new Container([snakeDrawer, foodDrawer])
 	container.setup()
-	console.log('START!')
+	showMessage('START!')
 }
 
 function draw() {
 	background(25)
+	noFill()
+	stroke(255)
+	strokeWeight(20)
+	color(255)
+	rect(0, 0, width, height)
+	noStroke()
 	frameRate(10)
 	container.draw()
 	checkColisions(container.colisions(baseSize))
 	if (snakeDrawer.crashed()) {
-		console.log('Game Over! FINAL SCORE:', eaten)
 		pause()
+		showMessage('GAME OVER! FINAL SCORE:', eaten)
 		started = false
 	}
 }
@@ -57,11 +64,12 @@ function checkColisions(colisions) {
 			snakeFound = snakeHeadFound.getParent()
 			if(foodFound) {
 				foodFound.restart(
-					random(0, width - 1.2*baseSize), 
-					random(0, height - 1.2*baseSize)
+					random(baseSize, width - 1.2*baseSize), 
+					random(baseSize, height - 1.2*baseSize)
 				)
 				snakeFound.increase()
 				eaten++
+				showMessage('SCORE: ', eaten)
 				break
 			} else {
 				snakeFound.crash()
@@ -74,20 +82,16 @@ function checkColisions(colisions) {
 function keyPressed() {
 	switch(keyCode) {
 		case LEFT_ARROW:
-			if(snakeDrawer.getXSpeed() === 0)
-				snakeDrawer.dir(-1, 0)
+			turnLeft(snakeDrawer)
 			break
 		case RIGHT_ARROW:
-			if(snakeDrawer.getXSpeed() === 0)
-				snakeDrawer.dir(1, 0)
+			turnRight(snakeDrawer)
 			break
 		case UP_ARROW:
-			if(snakeDrawer.getYSpeed() === 0)
-				snakeDrawer.dir(0, -1)
+			turnUp(snakeDrawer)
 			break
 		case DOWN_ARROW:
-			if(snakeDrawer.getYSpeed() === 0)
-				snakeDrawer.dir(0, 1)
+			turnDown(snakeDrawer)
 			break
 		case ENTER:
 			restart()
@@ -98,19 +102,70 @@ function keyPressed() {
 	}
 }
 
+function mousePressed() {
+	if (topScreen(mouseX, mouseY)) {
+		turnUp(snakeDrawer)
+	} else if (bottomScreen(mouseX, mouseY)) {
+		turnDown(snakeDrawer)
+	} else if(leftScreen(mouseX, mouseY)) {
+		turnLeft(snakeDrawer)
+	} else if (rightScreen(mouseX, mouseY)) {
+		turnRight(snakeDrawer)
+	}
+}
+
+function topScreen(x, y) {
+	return y > 0 && y <= height/4
+}
+
+function bottomScreen(x, y) {
+	return y >= 3*height/4 && y <= height
+}
+
+function leftScreen(x, y) {
+	return y > height/4 && y < 3*height/4 && x > 0 && x < width/2
+}
+
+function rightScreen(x, y) {
+	return y > height/4 && y < 3*height/4 && x > width/2 && x < width
+}
+
+function turnLeft(snakeDrawer) {
+	if(snakeDrawer.getXSpeed() === 0)
+		snakeDrawer.dir(-1, 0)
+}
+
+function turnRight(snakeDrawer) {
+	if(snakeDrawer.getXSpeed() === 0)
+		snakeDrawer.dir(1, 0)
+}
+
+function turnUp(snakeDrawer) {
+	if(snakeDrawer.getYSpeed() === 0)
+		snakeDrawer.dir(0, -1)
+}
+
+function turnDown(snakeDrawer) {
+	if(snakeDrawer.getYSpeed() === 0)
+		snakeDrawer.dir(0, 1)
+}
+
 function pause() {
 	if (started) {
 		paused = !paused 
 	
-		if(paused)
+		if(paused) {
 			noLoop()
-		else
+			showMessage('PAUSED!')
+		} else {
 			loop()
+			showMessage('GO!')
+		}
 	}
 }
 
 function restart () {
-	console.log('START!')
+	showMessage('START!')
 	eaten = 0
 	started = true
 	paused = true
@@ -118,4 +173,14 @@ function restart () {
 		object.restart()
 	}
 	pause()
+}
+
+function showMessage () {
+	let message = ''
+	for (let i = 0; i < arguments.length; i++) {
+		message += arguments[i] + ' '
+	}
+	let span = document.getElementById('msg');
+	span.innerHTML = message
+	console.log(message)
 }

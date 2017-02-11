@@ -13,6 +13,8 @@ class FoodDrawer extends Drawable {
 	}
 	draw() {
 		fill(this.color)
+		stroke(0)
+		strokeWeight(0.5)
 		rect(this.object.x, this.object.y, this.size, this.size)
 		super.draw()
 	}
